@@ -55,16 +55,6 @@ st.sidebar.title("✍️ Content Pipeline")
 st.sidebar.markdown("AI-powered multi-agent content generation using **CrewAI** and **xAI Grok**.")
 
 st.sidebar.markdown("---")
-
-# API key input for deployed environments
-api_key_input = st.sidebar.text_input(
-    "🔑 xAI API Key",
-    type="password",
-    value="",
-    help="Enter your xAI API key here, or set it via Streamlit secrets / .env file."
-)
-
-st.sidebar.markdown("---")
 st.sidebar.subheader("🤖 Agents in the Crew")
 st.sidebar.info(
     "1. **Trend Researcher** — Finds compelling angles & target audience.\n"
@@ -83,15 +73,12 @@ st.markdown("Enter a topic below to generate a full blog post and tailored socia
 topic = st.text_input("Enter your content topic", placeholder="e.g. The future of AI in education")
 
 if st.button("Generate Content", type="primary"):
-    # Resolve API key: sidebar input > env var
-    api_key = api_key_input if api_key_input else os.environ.get("XAI_API_KEY")
+    # Check for the API key from .env or Streamlit secrets
+    api_key = os.environ.get("XAI_API_KEY")
     
     if not api_key:
-        st.error("⚠️ Please provide your xAI API key in the sidebar, or configure it via Streamlit secrets / `.env` file.")
+        st.error("⚠️ Please set XAI_API_KEY in your .env file or Streamlit secrets.")
         st.stop()
-
-    # Set the key in the environment for the crew to pick it up
-    os.environ["XAI_API_KEY"] = api_key
 
     if not topic:
         st.error("Please enter a topic.")
