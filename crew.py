@@ -1,4 +1,5 @@
 import os
+import patch_chromadb  # Must run before crewai/chromadb imports
 from crewai import Crew, Process, LLM
 
 from agents import (
