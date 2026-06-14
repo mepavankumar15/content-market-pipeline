@@ -1,7 +1,6 @@
 import os
 os.environ.setdefault("CHROMA_SERVER_NOFILE", "")
 os.environ.setdefault("IS_PERSISTENT", "0")
-import patch_chromadb  # Must run before crewai/chromadb imports
 
 import streamlit as st
 import time
