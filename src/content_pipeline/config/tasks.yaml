@@ -1,0 +1,41 @@
+research_task:
+  description: >
+    Research the topic '{topic}' and provide:
+    1. A brief overview (2-3 sentences)
+    2. 3 compelling content angles
+    3. Target audience description
+    4. 5 key talking points
+  expected_output: >
+    Structured research brief
+
+seo_task:
+  description: >
+    Based on the research brief, provide:
+    1. 5 SEO keywords (ranked by priority)
+    2. Suggested blog post title (include primary keyword)
+    3. Meta description (max 155 chars)
+  expected_output: >
+    SEO brief with keywords, title, meta description
+
+blog_task:
+  description: >
+    Write a complete blog post about '{topic}' using the research brief and SEO keywords. Format:
+    - Title (use suggested SEO title)
+    - Introduction (hook the reader)
+    - Section 1 with H2
+    - Section 2 with H2
+    - Section 3 with H2
+    - Conclusion
+    - CTA (e.g. comment, share, subscribe)
+  expected_output: >
+    Full blog post in Markdown format
+
+social_task:
+  description: >
+    Repurpose the blog post into social media content. Return clearly labelled sections:
+    ## LINKEDIN POST
+    ## TWITTER THREAD (Tweet 1, Tweet 2, Tweet 3, Tweet 4, Tweet 5, Tweet 6, Tweet 7)
+    Each tweet must be under 280 characters. Use hooks, stats, insights, and end with a CTA.
+    ## INSTAGRAM CAPTION
+  expected_output: >
+    All 3 platform posts, clearly separated sections containing the social media posts.

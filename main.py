@@ -92,9 +92,10 @@ if st.button("Generate Content", type="primary"):
         start_time = time.time()
         
         try:
-            from crew import build_crew
+            from src.content_pipeline.crew import ContentPipelineCrew
             
-            crew_instance = build_crew()
+            crew_app = ContentPipelineCrew()
+            crew_instance = crew_app.crew()
             result = crew_instance.kickoff(inputs={"topic": topic})
             end_time = time.time()
             
