@@ -1,41 +1,39 @@
 """
-Physical source-code patch for chromadb to fix the Pydantic type inference error.
-This MUST be imported before crewai or chromadb in main.py.
+Ultimate memory-level monkey-patch for the Pydantic v1 / ChromaDB type inference bug.
+This patch runs completely in memory and does not require write access to the filesystem,
+making it 100% compatible with read-only cloud environments like Streamlit Cloud.
 """
-import os
 import sys
-import importlib.util
 
-def apply_physical_patch():
+def apply_memory_patch():
     try:
-        # Find where chromadb is installed WITHOUT importing it
-        spec = importlib.util.find_spec("chromadb")
-        if not spec or not spec.submodule_search_locations:
-            return
-            
-        chromadb_path = spec.submodule_search_locations[0]
-        config_file_path = os.path.join(chromadb_path, "config.py")
+        # Import pydantic v1 typing module where the bug originates
+        import pydantic.v1.typing as pydantic_typing
+        from pydantic.v1.errors import ConfigError
         
-        if not os.path.exists(config_file_path):
-            return
-            
-        # Read the source code
-        with open(config_file_path, "r", encoding="utf-8") as f:
-            content = f.read()
-            
-        # The bug is that pydantic strict typing throws an error because the validator
-        # returns Optional[str] but the field is Optional[int].
-        # We physically rewrite the type hint in the source code of the installed package!
-        target_str = "chroma_server_nofile: Optional[int] = None"
-        replacement_str = "chroma_server_nofile: Optional[str] = None"
+        # Save the original function
+        original_resolve_annotations = pydantic_typing.resolve_annotations
         
-        if target_str in content:
-            new_content = content.replace(target_str, replacement_str)
-            with open(config_file_path, "w", encoding="utf-8") as f:
-                f.write(new_content)
-            print("Successfully patched chromadb/config.py source code!")
-            
-    except Exception as e:
-        print(f"Failed to patch chromadb: {e}")
+        # Define our wrapped function that catches the specific ChromaDB crash
+        def patched_resolve_annotations(raw_annotations, module_name):
+            try:
+                return original_resolve_annotations(raw_annotations, module_name)
+            except ConfigError as e:
+                if "chroma_server_nofile" in str(e):
+                    # If it's the exact chroma bug, just remove the problematic annotation 
+                    # by returning an empty dict or filtering it out!
+                    safe_annotations = {
+                        k: v for k, v in raw_annotations.items() if k != "chroma_server_nofile"
+                    }
+                    return original_resolve_annotations(safe_annotations, module_name)
+                raise  # Re-raise if it's a different error
+                
+        # Override the function in memory
+        pydantic_typing.resolve_annotations = patched_resolve_annotations
+        print("Memory patch applied successfully!")
+    except ImportError:
+        # If pydantic.v1 isn't installed yet, or it's a completely different version, skip safely.
+        pass
 
-apply_physical_patch()
+# Run immediately upon import
+apply_memory_patch()
