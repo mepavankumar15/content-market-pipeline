@@ -66,5 +66,6 @@ class ContentPipelineCrew:
             agents=self.agents,
             tasks=self.tasks,
             process=Process.sequential,
-            verbose=True
+            verbose=True,
+            memory=False
         )
