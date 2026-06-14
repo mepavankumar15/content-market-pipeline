@@ -1,5 +1,9 @@
-import streamlit as st
 import os
+# Fix chromadb Pydantic "chroma_server_nofile" error before any imports
+os.environ.setdefault("CHROMA_SERVER_NOFILE", "")
+os.environ.setdefault("IS_PERSISTENT", "0")
+
+import streamlit as st
 import time
 import re
 from dotenv import load_dotenv
